@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: apache-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: apache
+  template:
+    metadata:
+      labels:
+        app: apache
+    spec:
+      containers:
+        - name: apache
+          image: unzila/apache-proxy
+          ports:
+            - containerPort: 80
+          env:
+            # Optional: Add environment variables to help with debugging or logging
+            - name: APACHE_LOG_DIR
+              value: "/var/log/apache2"
+          volumeMounts:
+            - name: apache-logs
+              mountPath: /var/log/apache2
+      volumes:
+        - name: apache-logs
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: apache-service
+spec:
+  selector:
+    app: apache
+  ports:
+    - port: 80
+      targetPort: 80
+  type: LoadBalancer

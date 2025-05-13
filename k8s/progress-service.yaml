@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: progress-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: progress
+  template:
+    metadata:
+      labels:
+        app: progress
+    spec:
+      containers:
+        - name: progress
+          image: unzila/progres-service
+          ports:
+            - containerPort: 3000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: progress-service
+spec:
+  selector:
+    app: progress
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3000
+  type: ClusterIP
